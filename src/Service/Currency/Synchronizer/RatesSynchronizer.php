@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 readonly class RatesSynchronizer
 {
     public function __construct(
-        private RateProviderInterface $adapter,
+        private RateProviderInterface $rateProvider,
         private CurrencyRepository $currencyRepository,
         private RateRepository $rateRepository,
         private LoggerInterface $logger,
@@ -27,13 +27,13 @@ readonly class RatesSynchronizer
 
         $currencyList = [];
         foreach ($currencies as $currency) {
-            $currencyList[$currency->getCode()] = $currency;
+            $currencyList[$currency->getCode()->getValue()] = $currency;
         }
         unset($currency);
 
         foreach ($currencyList as $baseCurrency) {
-            $rates = $this->adapter->getRates(
-                new CurrencyCode($baseCurrency->getCode()),
+            $rates = $this->rateProvider->getRates(
+                $baseCurrency->getCode(),
                 $this->transformToValueObjects($currencyList)
             );
             $this->rateRepository->beginTransaction();
@@ -66,7 +66,7 @@ readonly class RatesSynchronizer
     {
         $result = [];
         foreach ($currencyList as $currency) {
-            $result[] = new CurrencyCode($currency->getCode());
+            $result[] = new CurrencyCode($currency->getCode()->getValue());
         }
 
         return $result;

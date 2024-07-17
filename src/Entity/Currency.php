@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CurrencyRepository;
+use App\Service\Currency\ValueObject\CurrencyCode;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
@@ -25,9 +26,9 @@ class Currency
         $this->symbol = $symbol;
     }
 
-    public function getCode(): string
+    public function getCode(): CurrencyCode
     {
-        return $this->code;
+        return new CurrencyCode($this->code);
     }
 
     public function getName(): string
