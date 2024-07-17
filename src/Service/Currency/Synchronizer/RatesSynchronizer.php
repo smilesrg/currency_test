@@ -50,8 +50,8 @@ readonly class RatesSynchronizer
                 $this->rateRepository->flush();
                 $this->rateRepository->commit();
             } catch (\Throwable $exception) {
-                $this->rateRepository->rollback();
                 $this->logger->error($exception->getMessage(), ['exception' => $exception]);
+                $this->rateRepository->rollback();
 
                 throw new SynchronizerException($exception);
             }
