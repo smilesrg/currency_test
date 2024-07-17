@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Currency;
 use App\Entity\Rate;
+use App\Service\Currency\ValueObject\CurrencyCode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,6 +16,18 @@ class RateRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Rate::class);
+    }
+
+    public function findRate(CurrencyCode $baseCurrency, CurrencyCode $targetCurrency)
+    {
+        return $this->createQueryBuilder('r')
+            ->select('r')
+            ->where('r.baseCurrency = :baseCurrency')
+            ->andWhere('r.targetCurrency = :targetCurrency')
+            ->setParameter('baseCurrency', $baseCurrency)
+            ->setParameter('targetCurrency', $targetCurrency)
+            ->getQuery()
+            ->getSingleResult();
     }
 
     public function deleteRatesForBaseCurrency(Currency $baseCurrency): void
