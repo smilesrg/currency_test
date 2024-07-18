@@ -22,3 +22,13 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    admin.currency:
+        class: App\Admin\CurrencyAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Currency, controller: ~, manager_type: orm, group: admin, label: Currency }
+
+    admin.rate:
+        class: App\Admin\RateAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Rate, controller: ~, manager_type: orm, group: admin, label: Rate }

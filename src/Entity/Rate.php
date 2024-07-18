@@ -33,6 +33,11 @@ class Rate
         $this->rate = $rate;
     }
 
+    public function __toString(): string
+    {
+        return $this->baseCurrency->getCode() . '/' . $this->targetCurrency->getCode();
+    }
+
     #[ORM\PreFlush]
     public function preFlush(): void
     {
@@ -57,5 +62,19 @@ class Rate
     public function getLastUpdated(): ?DateTimeImmutable
     {
         return $this->lastUpdated;
+    }
+
+    public function setRate(?float $rate): Rate
+    {
+        $this->rate = $rate;
+
+        return $this;
+    }
+
+    public function setLastUpdated(?DateTimeImmutable $lastUpdated): Rate
+    {
+        $this->lastUpdated = $lastUpdated;
+
+        return $this;
     }
 }
