@@ -23,6 +23,11 @@ readonly class CurrencyCode
         return $this->currencyCode;
     }
 
+    public function equals(CurrencyCode $currencyCode): bool
+    {
+        return $this->getValue() === $currencyCode->getValue();
+    }
+
     public function __toString(): string
     {
         return $this->getValue();

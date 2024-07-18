@@ -19,9 +19,9 @@ class Currency
     #[ORM\Column(length: 3)]
     private string $symbol;
 
-    public function __construct(string $code, string $name, string $symbol)
+    public function __construct(CurrencyCode $currencyCode, string $name, string $symbol)
     {
-        $this->code = $code;
+        $this->code = $currencyCode->getValue();
         $this->name = $name;
         $this->symbol = $symbol;
     }

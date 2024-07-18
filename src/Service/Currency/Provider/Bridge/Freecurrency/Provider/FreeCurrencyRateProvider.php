@@ -29,12 +29,7 @@ readonly class FreeCurrencyRateProvider implements RateProviderInterface
         //TODO: validate using JSON Schema, if the data received is correct
 
         foreach ($rates['data'] as $currencyCode => $rate) {
-            $rateDTO = new RateDTO();
-            $rateDTO->baseCurrencyCode = $baseCurrencyCode;
-            $rateDTO->targetCurrencyCode = new CurrencyCode($currencyCode);
-            $rateDTO->rate = $rate;
-
-            yield $rateDTO;
+            yield new RateDTO($baseCurrencyCode, new CurrencyCode($currencyCode), $rate);
         }
     }
 

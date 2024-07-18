@@ -4,9 +4,12 @@ namespace App\Service\Currency\Provider\DTO;
 
 use App\Service\Currency\ValueObject\CurrencyCode;
 
-class RateDTO
+readonly class RateDTO
 {
-    public CurrencyCode $baseCurrencyCode;
-    public CurrencyCode $targetCurrencyCode;
-    public float $rate;
+    public function __construct(
+        public CurrencyCode $baseCurrencyCode,
+        public CurrencyCode $targetCurrencyCode,
+        public float $rate,
+    ) {
+    }
 }

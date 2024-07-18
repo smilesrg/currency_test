@@ -11,7 +11,7 @@ use App\Service\Currency\Synchronizer\Exception\SynchronizerException;
 use App\Service\Currency\ValueObject\CurrencyCode;
 use Psr\Log\LoggerInterface;
 
-readonly class RatesSynchronizer
+readonly class RateSynchronizer
 {
     public function __construct(
         private RateProviderInterface $rateProvider,
@@ -31,17 +31,16 @@ readonly class RatesSynchronizer
         }
         unset($currency);
 
+        $currencyCodes = array_map(fn(Currency $currency): CurrencyCode => $currency->getCode(), $currencyList);
+
         foreach ($currencyList as $baseCurrency) {
-            $rates = $this->rateProvider->getRates(
-                $baseCurrency->getCode(),
-                $this->transformToValueObjects($currencyList)
-            );
+            $rates = $this->rateProvider->getRates($baseCurrency->getCode(), $currencyCodes);
             $this->rateRepository->beginTransaction();
             try {
                 $this->rateRepository->deleteRatesForBaseCurrency($baseCurrency);
                 foreach ($rates as $rateDTO) {
                     $targetCurrency = $currencyList[$rateDTO->targetCurrencyCode->getValue()];
-                    if ($baseCurrency->getCode() === $targetCurrency->getCode()) {
+                    if ($baseCurrency->getCode()->equals($targetCurrency->getCode())) {
                         continue;
                     }
                     $rate = new Rate($baseCurrency, $targetCurrency, $rateDTO->rate);
@@ -56,19 +55,5 @@ readonly class RatesSynchronizer
                 throw new SynchronizerException($exception);
             }
         }
-    }
-
-    /**
-     * @param Currency[] $currencyList
-     * @return CurrencyCode[]
-     */
-    private function transformToValueObjects(array $currencyList): array
-    {
-        $result = [];
-        foreach ($currencyList as $currency) {
-            $result[] = new CurrencyCode($currency->getCode()->getValue());
-        }
-
-        return $result;
     }
 }
