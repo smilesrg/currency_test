@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Service\Currency\Synchronizer\Exception\SynchronizerException;
 use App\Service\Currency\Synchronizer\RateSynchronizer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,7 +22,13 @@ class SynchronizeRatesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->ratesSynchronizer->synchronize();
+        try {
+            $this->ratesSynchronizer->synchronize();
+        } catch (SynchronizerException $exception) {
+            $output->writeln($exception->getMessage());
+
+            return Command::FAILURE;
+        }
 
         $output->writeln('Rates synchronized!');
 
