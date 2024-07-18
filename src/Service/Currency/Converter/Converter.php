@@ -3,7 +3,10 @@
 namespace App\Service\Currency\Converter;
 
 use App\Repository\RateRepository;
+use App\Service\Currency\Converter\Exception\ConverterException;
 use App\Service\Currency\ValueObject\CurrencyCode;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 readonly class Converter
 {
@@ -12,10 +15,17 @@ readonly class Converter
     ) {
     }
 
-    public function convert(int $amount, CurrencyCode $baseCurrency, CurrencyCode $targetCurrency): int
+    /**
+     * @throws ConverterException
+     */
+    public function convert(int $amount, CurrencyCode $baseCurrency, CurrencyCode $targetCurrency): float
     {
-        $rate = $this->rateRepository->findRate($baseCurrency, $targetCurrency);
+        try {
+            $rate = $this->rateRepository->findRate($baseCurrency, $targetCurrency);
+        } catch (NonUniqueResultException|NoResultException $exception) {
+            throw new ConverterException($exception->getMessage(), $exception->getCode(), $exception);
+        }
 
-        return $amount*$rate;
+        return $rate->getRate() * $amount;
     }
 }

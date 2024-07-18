@@ -6,6 +6,8 @@ use App\Entity\Currency;
 use App\Entity\Rate;
 use App\Service\Currency\ValueObject\CurrencyCode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,7 +20,11 @@ class RateRepository extends ServiceEntityRepository
         parent::__construct($registry, Rate::class);
     }
 
-    public function findRate(CurrencyCode $baseCurrency, CurrencyCode $targetCurrency)
+    /**
+     * @throws NonUniqueResultException If the query result is not unique.
+     * @throws NoResultException        If the query returned no result.
+     */
+    public function findRate(CurrencyCode $baseCurrency, CurrencyCode $targetCurrency): Rate
     {
         return $this->createQueryBuilder('r')
             ->select('r')
